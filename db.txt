@@ -1,0 +1,64 @@
+-- Adminer 4.8.1 MySQL 8.2.0 dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+SET NAMES utf8mb4;
+
+DROP TABLE IF EXISTS `Basketball_Rules`;
+CREATE TABLE `Basketball_Rules` (
+  `StatusId` int NOT NULL AUTO_INCREMENT,
+  `StatusName` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Note` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY (`StatusId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `Basketball_Rules` (`StatusId`, `StatusName`, `Note`) VALUES
+(1,	'AET',	'延長賽'),
+(2,	'FT',	'正常時間'),
+(3,	'FRO',	'只回報結果');
+
+DROP TABLE IF EXISTS `Basketball_Teams`;
+CREATE TABLE `Basketball_Teams` (
+  `Team_ID` int NOT NULL AUTO_INCREMENT,
+  `Team_Name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY (`Team_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+DROP TABLE IF EXISTS `Football_ScoreBoard`;
+CREATE TABLE `Football_ScoreBoard` (
+  `match_id` int NOT NULL AUTO_INCREMENT,
+  `match_time` time DEFAULT NULL,
+  `match_status` varchar(10) DEFAULT NULL,
+  `home_team_id` int DEFAULT NULL,
+  `score` int DEFAULT NULL,
+  `away_team_id` int DEFAULT NULL,
+  `half_score` varchar(10) DEFAULT NULL,
+  `data` varchar(50) DEFAULT NULL,
+  `trend` varchar(50) DEFAULT NULL,
+  `odds` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`match_id`),
+  KEY `home_team_id` (`home_team_id`),
+  KEY `away_team_id` (`away_team_id`),
+  CONSTRAINT `Football_ScoreBoard_ibfk_1` FOREIGN KEY (`home_team_id`) REFERENCES `Football_Teams` (`team_id`),
+  CONSTRAINT `Football_ScoreBoard_ibfk_2` FOREIGN KEY (`away_team_id`) REFERENCES `Football_Teams` (`team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `Football_ScoreBoard` (`match_id`, `match_time`, `match_status`, `home_team_id`, `score`, `away_team_id`, `half_score`, `data`, `trend`, `odds`) VALUES
+(1,	'03:45:00',	'完',	1,	1,	2,	'1-6 1-0',	'析亚欧荐',	'0.92 16.5 0.95',	'受两/两球半 8.00 3/3.5 0.90 1.12 0.85');
+
+DROP TABLE IF EXISTS `Football_Teams`;
+CREATE TABLE `Football_Teams` (
+  `team_id` int NOT NULL AUTO_INCREMENT,
+  `team_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '--目前最長為21個字符 依需求調整長度',
+  PRIMARY KEY (`team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `Football_Teams` (`team_id`, `team_name`) VALUES
+(1,	'北马其顿'),
+(2,	'英格兰');
+
+-- 2023-11-21 06:58:07
