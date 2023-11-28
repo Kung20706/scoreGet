@@ -6,62 +6,37 @@ import (
 	"os"
 	"time"
 
-	"github.com/tebeka/selenium"
-	"github.com/tebeka/selenium/chrome"
 )
 
 const (
 	port = 8080
 )
 
-func main() {
-	// 開啟 Chrome 驅動器
-	opts := []selenium.ServiceOption{
-		selenium.Output(os.Stderr), // 將日誌輸出到 STDERR
-	}
-	service, err := selenium.NewChromeDriverService("./chromedriver", port, opts...)
+func FindEleByHTML(htmlString  string ,title string, name string,contains string) []string {
+	var lotternames []string
+
+	doc, err := html.Parse(strings.NewReader(htmlString))
 	if err != nil {
-		log.Fatalf("Error creating ChromeDriver service: %v", err)
+		fmt.Println("Error parsing HTML:", err)
+		return lotternames
 	}
-	defer service.Stop()
 
-	// 設定 Chrome 選項
-	chromeCaps := chrome.Capabilities{
-		Args: []string{
-		},
-	}
-	caps := selenium.Capabilities{"browserName": "chrome"}
-	caps.AddChrome(chromeCaps)
-
-	// 開啟一個 Chrome 瀏覽器
-	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://127.0.0.1:%d/wd/hub", port))
-	if err != nil {
-		log.Fatalf("Error creating WebDriver: %v", err)
-	}
-	defer wd.Quit()
-
-	// 設定 POST 請求的 URL 和內容
-	url := "https://example.com/post-endpoint"
-	payload := "key1=value1&key2=value2"
-
-	// 使用 ExecuteScript 方法發送 POST 請求
-	script := fmt.Sprintf(`
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "%s", true);
-		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				console.log(xhr.responseText);
+	var findLottername func(*html.Node)
+	findLottername = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == title {
+			for _, attr := range n.Attr {
+				if attr.Key == name && strings.Contains(attr.Val, contains) {
+					// Extract lottername from the href attribute
+					lottername := strings.TrimPrefix(attr.Val, "https://www.lkag3.com/Issue/history?lottername=")
+					lotternames = append(lotternames, lottername)
+				}
 			}
-		};
-		xhr.send("%s");
-	`, url, payload)
-
-	_, err = wd.ExecuteScript(script, nil)
-	if err != nil {
-		log.Fatalf("Error executing script: %v", err)
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			findLottername(c)
+		}
 	}
 
-	// 等待一段時間，讓你可以看到結果
-	time.Sleep(5 * time.Second)
+	findLottername(doc)
+	return lotternames
 }

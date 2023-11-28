@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"log"
+	"net/http"
+	"golang.org/x/net/html/charset"
 )
 
 func main() {
@@ -35,15 +36,27 @@ func main() {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:" , err)
+		fmt.Println("Error sending request:", err)
 		return
 	}
 	defer resp.Body.Close()
-	// 读取并打印响应体
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+
+	// 检查响应的Content-Type
+	contentType := resp.Header.Get("Content-Type")
+
+	// 解码响应体为UTF-8
+	utf8Reader, err := charset.NewReader(resp.Body, contentType)
+	if err != nil {
+		fmt.Println("Error creating UTF-8 reader:", err)
+		return
+	}
+
+	// 读取解码后的内容
+	decodedBody, err := ioutil.ReadAll(utf8Reader)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
 		return
 	}
-	log.Print(resp,bodyBytes)
+
+	log.Print(string(decodedBody))
 }

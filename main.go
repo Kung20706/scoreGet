@@ -7,18 +7,18 @@ import (
     "log"
     "strings"
     "time"
-
-
+    "golang.org/x/net/html"
+    "github.com/PuerkitoBio/goquery"
     "github.com/tebeka/selenium"
     "github.com/tebeka/selenium/chrome"
-    "golang.org/x/net/html"
 )
 
 
 const (
     port = 8080
+    maxAttempts = 2
+    retryInterval = 1
 )
-
 
 func main() {
     opts := []selenium.ServiceOption{
@@ -27,8 +27,6 @@ func main() {
 
 
     }
-
-
     // Enable debug info.
     // selenium.SetDebug(true)
     //這裡用相對路徑的方式去寫chromedriver的位置
@@ -44,105 +42,86 @@ func main() {
             "args": []string{},
         },
     }
+    
+    // proxyServerURL := "213.157.6.50"
     chromeCaps := chrome.Capabilities{
         Args: []string{
             // "--headless", // set chrome headless
+            // "--proxy-server=" + proxyServerURL,
         },
     }
     caps.AddChrome(chromeCaps)
     wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://127.0.0.1:%d/wd/hub", port))
     if err != nil {
         panic(err)
-    }
+          }
     defer wd.Quit()
     // 取得 第一個分頁的遊戲表(包括跨境遊戲)
     if err := wd.Get("https://www.lkag3.com/index/lotterylist"); err != nil {
         panic(err)
     }
-    pSource, err := wd.PageSource()
+    Source, err := wd.PageSource()
     if err != nil {
         log.Fatalf("Failed to get page source: %v", err)
     }
-    log.Print(pSource)
+    //找到想要元素的標籤
+    elementTag:="href"
+    elementtitle:="a"
+    contains := "lottername="
+    lotternames := FindEleByHTML(Source,elementtitle,elementTag,contains)
 
-
-    // if err := wd.Get("https://www.lkag3.com/Issue/history?lottername=CQSSC"); err != nil {
-    //     panic(err)
-    // }
-
-
-    // pageSource, err := wd.PageSource()
-    // if err != nil {
-    //     log.Fatalf("Failed to get page source: %v", err)
-    // }
-
-
-    // // 调用提取函数
-    // result, err := extractSpanText(pageSource)
-    // if err != nil {
-    //     fmt.Println("Error:", err)
-    //     return
-    // }
-   
-    // url := "https://www.lkag3.com/Issue/ajax_history"
-	// payload := []byte("lotterycode=CQSSC&lotteryname=CQSSC")
-
-	// // 設定 POST 請求的標頭
-	// headers := map[string]interface{}{
-	// 	"Accept":          "application/json, text/javascript, */*; q=0.01",
-	// 	"Accept-Encoding": "gzip, deflate, br",
-	// 	"Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-	// 	"Cache-Control":   "no-cache",
-	// 	"Content-Length":  "35",
-	// 	"Content-Type":    "application/x-www-form-urlencoded; charset=UTF-8",
-	// 	"Origin":          "https://www.lkag3.com",
-	// 	"Pragma":          "no-cache",
-	// 	"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-	// 	"X-Requested-With": "XMLHttpRequest",
-	// }
-
-	// 發送 POST 請求
-    script := `const formData = new FormData();
-	formData.append('lotterycode', 'CQSSC');
-	formData.append('lotteryname', 'CQSSC');
-
-var headers = new Headers();
-
-	// 添加需要的请求头信息// 添加请求头信息
-	headers.append('Accept', 'application/json, text/javascript, */*; q=0.01');
-	headers.append('Accept-Encoding', 'gzip, deflate, br');
-	headers.append('Accept-Language', 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7');
-	headers.append('Cache-Control', 'no-cache');
-	headers.append('Content-Length', '35');
-	headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-	headers.append('Origin', 'https://www.lkag3.com');
-	headers.append('Pragma', 'no-cache');
-	headers.append('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36');
-	headers.append('X-Requested-With', 'XMLHttpRequest');
-	// 添加其他请求头，根据需要添加更多
-	
-	// 创建一个包含请求头的 options 对象
-	var requestOptions = {
-	  method: 'POST',  // 设置请求的方法
-	  headers: headers, // 将 Headers 对象传递给 headers 属性
-	  body: 'lotterycode=CQSSC&lotteryname=CQSSC' // 请求的 body，可以是字符串、FormData 等
-	};
-	// 使用fetch发送POST请求
-	fetch('https://www.lkag3.com/Issue/ajax_history', requestOptions	)
-	  .then(response => response.json())
-	  .then(data => {
-		// 处理返回的数据
-		console.log(data);
-	  })
-	  .catch(error => {
-		console.error('Error:', error);
-	  });`
-      time.Sleep(5 * time.Second)
-	_, err = wd.ExecuteScript(script, nil)
-
-	if err != nil {
-		log.Fatalf("Error sending POST request: %v", err)
+	fmt.Println("Lotternames:")
+	var  ScoreList []string
+	for _, lottername := range lotternames {
+		fmt.Println(lottername)
+        ScoreList = append(ScoreList, lottername)
+        log.Print(ScoreList)
 	}
+    
+    for i,lottername  := range ScoreList[5:]{
+        for attempt := 0; attempt < maxAttempts; attempt++ {
+    time.Sleep(9* time.Second)
+    if err := wd.Get("https://www.lkag3.com/Issue/history?lottername="+ lottername); err != nil {
+            panic(err)
+        }
+
+    log.Print(lottername)
+    pageSource, err := wd.PageSource()
+    if err != nil {
+        log.Fatalf("Failed to get page source: %v", err)
+    }
+
+    // 解析超文本字串
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(pageSource))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+    td := doc.Find("td.ball")
+
+	if td.Length() == 0 {
+		fmt.Println("No matching <td> element found")
+		time.Sleep(retryInterval)
+        continue // 重新調用迴圈:用來支援請求時尚未渲染網頁 取得不了資訊的問題 
+	}
+    // 從 <td> 內的 <span> 元素中提取內容
+	var spans []string
+	td.Find("div.b1 span, div.b2 span, div.b3 span, div.b4 span").Each(func(i int, span *goquery.Selection) {
+		spans = append(spans, span.Text())
+	})
+
+	fmt.Println("Content of <td>: ", spans)
+    // 判断是否回傳429错误
+	if strings.Contains(pageSource, "429 Too Many Requests") {
+			log.Println("Received 429 Too Many Requests. Waiting for a while and retrying...")
+			time.Sleep(8 * time.Second)
+			i--                            // 重请求
+			continue
+	}
+        // Break out of the loop if successful
+    break
+    }
+}
     time.Sleep(55 * time.Second)
 }
 
@@ -181,43 +160,31 @@ func getLocalIPAddress(wd selenium.WebDriver) (string, error) {
 }
 
 
-func extractSpanText(htmlContent string) ([]string, error) {
-    var result []string
+func FindEleByHTML(htmlString  string ,title string, name string,contains string) []string {
+	var lotternames []string
 
+	doc, err := html.Parse(strings.NewReader(htmlString))
+	if err != nil {
+		fmt.Println("Error parsing HTML:", err)
+		return lotternames
+	}
 
-    // 解析HTML内容
-    doc, err := html.Parse(strings.NewReader(htmlContent))
-    if err != nil {
-        return nil, err
-    }
+	var findLottername func(*html.Node)
+	findLottername = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == title {
+			for _, attr := range n.Attr {
+				if attr.Key == name && strings.Contains(attr.Val, contains) {
+					// Extract lottername from the href attribute
+					lottername := strings.TrimPrefix(attr.Val, "https://www.lkag3.com/Issue/history?lottername=")
+					lotternames = append(lotternames, lottername)
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			findLottername(c)
+		}
+	}
 
-
-    // 定义递归函数来提取span文本
-    var extract func(*html.Node)
-    extract = func(n *html.Node) {
-        // 如果当前节点是span，并且包含子节点
-        if n.Type == html.ElementNode && n.Data == "span" && n.FirstChild != nil {
-            // 提取span内的文本
-            text := strings.TrimSpace(n.FirstChild.Data)
-            result = append(result, text)
-        }
-
-
-        // 递归处理子节点
-        for c := n.FirstChild; c != nil; c = c.NextSibling {
-            extract(c)
-        }
-    }
-
-
-    // 调用递归函数开始提取
-    extract(doc)
-
-
-    return result, nil
+	findLottername(doc)
+	return lotternames
 }
-
-
-
-
-
