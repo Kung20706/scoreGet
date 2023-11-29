@@ -144,6 +144,8 @@ https://live.nowscore.com/2in1.aspx
     2.Browser訪問彩票類型成功,發送ajax失敗無法取得資料
     plan:A 取得失敗例外 將其加入切片在訪問一次 
          B 測試出html表格渲染失敗可以再做出處理
+    3.處理遊戲種類公單不同 顯示HTML時也不同
 參數post內有分頁 page:2
-
-GSB5Y XGLHC GSB5Y html標籤有問題需要處理
+MOLHC
+GSB5Y 
+<td class="ball" 11=""><div id="gbs_bg"><span>งวดที่ 10 O 2187754</span><br><span>งวดที่ 10 จ 7811245</span><br><span>งวดที่ 10 ฮ 6970568</span></div></td>

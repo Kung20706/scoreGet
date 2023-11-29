@@ -16,8 +16,8 @@ import (
 
 const (
     port = 8080
-    maxAttempts = 2
-    retryInterval = 1
+    maxAttempts = 5
+    retryInterval = 11
 )
 
 func main() {
@@ -78,14 +78,14 @@ func main() {
         log.Print(ScoreList)
 	}
     
-    for i,lottername  := range ScoreList[5:]{
+    for i,lottername  := range ScoreList[38:]{
         for attempt := 0; attempt < maxAttempts; attempt++ {
-    time.Sleep(9* time.Second)
-    if err := wd.Get("https://www.lkag3.com/Issue/history?lottername="+ lottername); err != nil {
+            if err := wd.Get("https://www.lkag3.com/Issue/history?lottername="+ lottername); err != nil {
             panic(err)
         }
 
     log.Print(lottername)
+    time.Sleep(2 * time.Second)
     pageSource, err := wd.PageSource()
     if err != nil {
         log.Fatalf("Failed to get page source: %v", err)
@@ -101,12 +101,12 @@ func main() {
 
 	if td.Length() == 0 {
 		fmt.Println("No matching <td> element found")
-		time.Sleep(retryInterval)
+		time.Sleep(10 * time.Second)
         continue // 重新調用迴圈:用來支援請求時尚未渲染網頁 取得不了資訊的問題 
 	}
     // 從 <td> 內的 <span> 元素中提取內容
 	var spans []string
-	td.Find("div.b1 span, div.b2 span, div.b3 span, div.b4 span").Each(func(i int, span *goquery.Selection) {
+	td.Find("div.b1 span, div.b2 span, div.b3 span, div.b4 span, td.v1 b1, div.gbs_bg span, tbody").Each(func(i int, span *goquery.Selection) {
 		spans = append(spans, span.Text())
 	})
 
@@ -114,7 +114,7 @@ func main() {
     // 判断是否回傳429错误
 	if strings.Contains(pageSource, "429 Too Many Requests") {
 			log.Println("Received 429 Too Many Requests. Waiting for a while and retrying...")
-			time.Sleep(8 * time.Second)
+			time.Sleep(15 * time.Second)
 			i--                            // 重请求
 			continue
 	}
