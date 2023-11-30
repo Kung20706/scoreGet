@@ -4,6 +4,8 @@ package main
 import (
     "fmt"
     // "os"
+    "gorm.io/driver/mysql"
+    "gorm.io/gorm"
     "log"
     "strings"
     "time"
@@ -21,15 +23,13 @@ const (
 )
 
 func main() {
+    dsn := "db_user:db_password@tcp(127.0.0.1:3306)/db?charset=utf8mb4_unicode_ci&parseTime=True&loc=Local"
+    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+    log.Print(db)
     opts := []selenium.ServiceOption{
-        // Enable fake XWindow session.
-        // selenium.StartFrameBuffer(),
-
-
     }
-    // Enable debug info.
-    // selenium.SetDebug(true)
-    //這裡用相對路徑的方式去寫chromedriver的位置
+
+    //相對路徑的方式找出chromedriver的位置
     service, err := selenium.NewChromeDriverService("./chromedriver", port, opts...)
     if err != nil {
         panic(err)
@@ -43,27 +43,30 @@ func main() {
         },
     }
     
-    // proxyServerURL := "213.157.6.50"
     chromeCaps := chrome.Capabilities{
         Args: []string{
-            // "--headless", // set chrome headless
+            // "--headless", // 設置無頭  正式時爬取需要使用的
             // "--proxy-server=" + proxyServerURL,
         },
     }
     caps.AddChrome(chromeCaps)
+
     wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://127.0.0.1:%d/wd/hub", port))
     if err != nil {
         panic(err)
           }
     defer wd.Quit()
+
     // 取得 第一個分頁的遊戲表(包括跨境遊戲)
     if err := wd.Get("https://www.lkag3.com/index/lotterylist"); err != nil {
         panic(err)
     }
+
     Source, err := wd.PageSource()
     if err != nil {
         log.Fatalf("Failed to get page source: %v", err)
     }
+
     //找到想要元素的標籤
     elementTag:="href"
     elementtitle:="a"
@@ -122,6 +125,7 @@ func main() {
     break
     }
 }
+   
     time.Sleep(55 * time.Second)
 }
 
