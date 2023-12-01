@@ -3,9 +3,6 @@ package main
 
 import (
     "fmt"
-    // "os"
-    "gorm.io/driver/mysql"
-    "gorm.io/gorm"
     "log"
     "strings"
     "time"
@@ -17,15 +14,21 @@ import (
 
 
 const (
-    port = 8080
+    port = 8707
     maxAttempts = 5
     retryInterval = 11
 )
 
 func main() {
-    dsn := "db_user:db_password@tcp(127.0.0.1:3306)/db?charset=utf8mb4_unicode_ci&parseTime=True&loc=Local"
-    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-    log.Print(db)
+    url := "https://free-proxy-list.net/"
+	proxyIPs, err := ScrapeProxyIPs(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Proxy IPs:", proxyIPs)
+	// 现在，你可以使用 proxyIPs 列表执行进一步的任务，例如通过代理进行请求。
+   
     opts := []selenium.ServiceOption{
     }
 
@@ -50,8 +53,7 @@ func main() {
         },
     }
     caps.AddChrome(chromeCaps)
-
-    wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://127.0.0.1:%d/wd/hub", port))
+    wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://127.0.0.1:%d/wd/hub",port))
     if err != nil {
         panic(err)
           }
@@ -128,6 +130,7 @@ func main() {
    
     time.Sleep(55 * time.Second)
 }
+
 
 
 // 本地 IP 地址

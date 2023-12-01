@@ -1,47 +1,47 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"log"
+)
 
-// binarySearch 使用二分搜索算法在已排序的切片中查找目標值
-func binarySearch(arr []int, target int) int {
-	left, right := 0, len(arr)-1
-
-	// 當左邊界小於等於右邊界時執行搜索
-	for left <= right {
-		// 計算中間索引
-		mid := left + (right-left)/2
-
-		// 如果中間值等於目標值，則返回中間索引
-		if arr[mid] == target {
-			return mid
-		}
-
-		// 如果中間值小於目標值，縮小搜索範圍到右半部分
-		if arr[mid] < target {
-			left = mid + 1
-		} else { // 如果中間值大於目標值，縮小搜索範圍到左半部分
-			right = mid - 1
-		}
-	}
-
-	// 如果未找到目標值，返回 -1 表示未找到
-	return -1
+type YourModel struct {
+	ID   int
+	Name string
+	// 其他欄位...
 }
 
 func main() {
-	// 有序的整數切片
-	sortedArray := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-
-	// 目標值
-	target := 7
-
-	// 在切片中搜索目標值
-	result := binarySearch(sortedArray, target)
-
-	// 打印結果
-	if result != -1 {
-		fmt.Printf("目標值 %d 在切片中的索引為 %d\n", target, result)
-	} else {
-		fmt.Printf("目標值 %d 未在切片中找到\n", target)
+	// 連線到 MySQL 資料庫
+	dsn := "db_user:db_password@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer func() {
+		// 正確的方式是使用 sql.DB 的 Close 方法
+		sqlDB, err := db.DB()
+		if err != nil {
+			log.Fatal(err)
+		}
+		sqlDB.Close()
+	}()
+
+	// 自動遷移（將模型結構映射到資料庫表）
+	err = db.AutoMigrate(&YourModel{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 查詢
+	var result YourModel
+	err = db.First(&result, 1).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 打印查詢結果
+	fmt.Printf("ID: %d, Name: %s\n", result.ID, result.Name)
 }
