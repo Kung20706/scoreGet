@@ -4,12 +4,15 @@ package main
 import (
     "fmt"
     "log"
-    "strings"
     "time"
-    "golang.org/x/net/html"
     "github.com/PuerkitoBio/goquery"
     "github.com/tebeka/selenium"
     "github.com/tebeka/selenium/chrome"
+    
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+    "strings"
+    "golang.org/x/net/html"
 )
 
 
@@ -20,14 +23,36 @@ const (
 )
 
 func main() {
-    url := "https://free-proxy-list.net/"
-	proxyIPs, err := ScrapeProxyIPs(url)
+   // 連線到 MySQL 資料庫
+	dsn := "db_user:db_password@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer func() {
+		// 正確的方式是使用 sql.DB 的 Close 方法
+		sqlDB, err := db.DB()
+		if err != nil {
+			log.Fatal(err)
+		}
+		sqlDB.Close()
+	}()
+    // 自動遷移（將模型結構映射到資料庫表）
+    err = db.AutoMigrate(&TicketNumber{})
+    if err != nil {
+        log.Fatal(err)
+    }
+    // 查詢
+    result :=TicketNumber{
+        LotteryTypeID:1,
+        WinningNumber:"j",
 
-	fmt.Println("Proxy IPs:", proxyIPs)
-	// 现在，你可以使用 proxyIPs 列表执行进一步的任务，例如通过代理进行请求。
+    }
+    err = db.Create(&result).Error
+    if err != nil {
+        log.Fatal(err)
+    }
+
    
     opts := []selenium.ServiceOption{
     }
@@ -45,7 +70,8 @@ func main() {
             "args": []string{},
         },
     }
-    
+    log.Print(
+        result)
     chromeCaps := chrome.Capabilities{
         Args: []string{
             // "--headless", // 設置無頭  正式時爬取需要使用的
@@ -132,6 +158,19 @@ func main() {
 }
 
 
+type TicketNumber struct {
+	ID               int     `gorm:"column:id;primary_key;type:int(20);NOT NULL;DEFAULT:0"`	
+	LotteryTypeID    int      `gorm:"column:lottery_type_id;type:int(20);"`
+	WinningNumber    string    `gorm:"column:winning_number;type:varchar(50);"`
+	AdditionalNumber string    `gorm:"column:additional_number;"`
+	LotteryDay       string    `gorm:"column:lottery day;"` // 数据库中是 date 类型，这里使用 string 类型
+	StartTime        string `gorm:"column:start_time;"`   // 数据库中是 datetime 类型，这里使用 time.Time 类型
+}
+
+// TableName 指定数据库表名
+func (TicketNumber) TableName() string {
+	return "Ticket_Numbers"
+}
 
 // 本地 IP 地址
 func getLocalIPAddress(wd selenium.WebDriver) (string, error) {

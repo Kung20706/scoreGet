@@ -62,3 +62,78 @@ INSERT INTO `Football_Teams` (`team_id`, `team_name`) VALUES
 (2,	'英格兰');
 
 -- 2023-11-21 06:58:07
+
+5.7----
+-- Adminer 4.8.1 MySQL 5.7.44 dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+SET NAMES utf8mb4;
+
+DROP TABLE IF EXISTS `Basketball_Rules`;
+CREATE TABLE `Basketball_Rules` (
+  `StatusId` int(11) NOT NULL AUTO_INCREMENT,
+  `StatusName` varchar(10) DEFAULT NULL,
+  `Note` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`StatusId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `Basketball_Rules` (`StatusId`, `StatusName`, `Note`) VALUES
+(1,	'AET',	'延長賽'),
+(2,	'FT',	'正常時間'),
+(3,	'FRO',	'只回報結果');
+
+DROP TABLE IF EXISTS `lottery_Types`;
+CREATE TABLE `lottery_Types` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `Ticket_Numbers`;
+CREATE TABLE `Ticket_Numbers` (
+  `ID` int(11) NOT NULL,
+  `Lottery_Type_ID` int(11) DEFAULT NULL,
+  `Winning_Number` varchar(55) NOT NULL,
+  `Additional_Number` varchar(255) NOT NULL,
+  `Lottery Day` date NOT NULL,
+  `Start_Time` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- 2023-12-01 09:44:23
+
+
+-- Adminer 4.8.1 MySQL 5.7.44 dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+SET NAMES utf8mb4;
+
+DROP TABLE IF EXISTS `lottery_types`;
+CREATE TABLE `lottery_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `Ticket_Numbers`;
+CREATE TABLE `Ticket_Numbers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lottery_type_id` int(11) NOT NULL,
+  `winning_number` varchar(50) DEFAULT NULL,
+  `additional_number` longtext,
+  `lottery day` longtext,
+  `start_time` longtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- 2023-12-04 11:19:38
