@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 	"strings"
-	"test/model"
-	models "test/model"
+	model "test/model"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -21,11 +21,13 @@ const (
 	port          = 8707
 	maxAttempts   = 5
 	retryInterval = 11
+	dbhost        = "127.0.0.1:3306"
 )
 
 func main() {
+
 	// 連線到 MySQL 資料庫
-	dsn := "db_user:db_password@tcp(127.0.0.1:3306)/db_name?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "db_user:db_password@tcp(" + dbhost + ")/db_name?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -52,7 +54,6 @@ func main() {
 		panic(err)
 	}
 	defer service.Stop()
-
 	caps := selenium.Capabilities{"browserName": "chrome",
 		"chromeOptions": map[string]interface{}{
 			"args": []string{},
@@ -70,6 +71,101 @@ func main() {
 		panic(err)
 	}
 	defer wd.Quit()
+	log.Print("資訊源:https://www.lkag3.com/Issue/history?lottername=CQSSC")
+	FindScore(wd, db)
+
+	log.Print("二次確認:https://www.cqccp.net/")
+	CheckScore(wd, db)
+}
+func CheckScore(wd selenium.WebDriver, db *gorm.DB) {
+	// 取得 第一個分頁的遊戲表(包括跨境遊戲)
+	if err := wd.Get("https://www.cqccp.net/"); err != nil {
+		return
+	}
+
+	time.Sleep(3 * time.Second)
+	Source, err := wd.PageSource()
+	if err != nil {
+		log.Fatalf("Failed to get page source: %v", err)
+	}
+	elementTag := "div.contain.center > div.floor2 > div.left-award.lf > div.double>div>div.num"
+
+	//取doc內的彩種
+
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(Source))
+	if err != nil {
+		log.Fatal(err)
+	}
+	td := doc.Find(elementTag)
+
+	STlist := model.TicketNumber{}
+	td.Each(func(i int, td *goquery.Selection) {
+		// 获取每个 <div> 元素的 id 属性值
+		ScoreType, exists := td.Attr("id")
+		if exists {
+			fmt.Printf("ID 属性的值 %d: %s\n", i+1, ScoreType)
+		} else {
+			fmt.Printf("第 %d 个 <div> 元素没有 id 属性\n", i+1)
+		}
+		Score := td.Find("ul> li")
+		LotteryFlag := td.Find("p")
+		pattern := `第(.*?)期`
+		re := regexp.MustCompile(pattern)
+		matches := re.FindStringSubmatch(LotteryFlag.Text())
+
+		if len(matches) > 1 {
+			result := matches[1]
+			fmt.Printf("提取的结果: %s\n", result)
+			STlist.LotteryDay = result
+		}
+		var resultBuilder strings.Builder
+		Score.Each(func(j int, li *goquery.Selection) {
+			// fmt.Printf("Score %d: %s\n", j+1, li.Text())
+			if j > 0 {
+				resultBuilder.WriteString(",")
+			}
+			resultBuilder.WriteString(li.Text())
+		})
+		// 查询符合条件的记录
+		condition := model.TicketNumber{
+			LotteryDay:    STlist.LotteryDay,
+			WinningNumber: resultBuilder.String(),
+		}
+		// log.Print(condition)
+		var result model.TicketNumber
+		db.Where(condition).First(&result)
+		if db.Error != nil {
+			fmt.Println("Failed to query records:", db.Error)
+			return
+		}
+		// 如果找到符合条件的记录，更新记录
+		if result.ID != 0 {
+			// 更新你需要修改的字段
+			updateFields := map[string]interface{}{
+				"winning_number": resultBuilder.String(),
+				"lottery_day":    STlist.LotteryDay,
+				"check_state":    1,
+			}
+
+			// 使用 Update 方法更新记录
+			db.Model(&model.TicketNumber{}).Where(condition).Updates(updateFields)
+			if db.Error != nil {
+				fmt.Println("Failed to update records:", db.Error)
+				return
+			}
+
+			fmt.Println("Records updated successfully.")
+		} else {
+			fmt.Println("No records found.")
+		}
+
+		// 输出查询结果
+		fmt.Printf("Query Result: %+v\n", result)
+	})
+
+}
+
+func FindScore(wd selenium.WebDriver, db *gorm.DB) {
 
 	// 取得 第一個分頁的遊戲表(包括跨境遊戲)
 	if err := wd.Get("https://www.lkag3.com/index/lotterylist"); err != nil {
@@ -81,26 +177,20 @@ func main() {
 		log.Fatalf("Failed to get page source: %v", err)
 	}
 
-	//找到想要元素的標籤
 	elementTag := "href"
 	elementtitle := "a"
 	contains := "lottername="
+	//取彩種
 	lotternames := FindEleByHTML(Source, elementtitle, elementTag, contains)
-
-	for _, lottername := range lotternames {
-		// 查詢條件 將表的球種ID適配到爬蟲擷取的欄位
-		condition := models.LotteryType{
+	for i, lottername := range lotternames[30:35] {
+		condition := model.LotteryType{
 			Name: lottername,
 		}
 		// 找出球種 若沒有則新增到球種表
-		var result models.LotteryType
+		var result model.LotteryType
 		if err := db.Where(condition).FirstOrCreate(&result).Error; err != nil {
 			log.Fatal(err)
 		}
-
-	}
-
-	for i, lottername := range lotternames[:49] {
 		for attempt := 0; attempt < maxAttempts; attempt++ {
 			if err := wd.Get("https://www.lkag3.com/Issue/history?lottername=" + lottername); err != nil {
 				panic(err)
@@ -116,7 +206,8 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			var result models.LotteryType
+
+			var result model.LotteryType
 			if err := db.Where("name = ?", lottername).First(&result).Error; err != nil {
 				log.Fatal(err)
 			}
@@ -127,6 +218,7 @@ func main() {
 			} else {
 				fmt.Printf("LotteryType not found for %s\n", lottername)
 			}
+
 			td := doc.Find("td.ball")
 
 			if td.Length() == 0 {
@@ -137,11 +229,11 @@ func main() {
 			// 從 <td> 內的 <span> 元素中提取內容
 			time.Sleep(3 * time.Second)
 			// 遍歷 1 到 10 的行數
-			for i := 1; i <= 10; i++ {
+			for i := 10; i >= 1; i-- {
 				// 使用 strconv.Itoa 將數字轉換為字符串
 				selector := "body > div.lotter-history-content > div > table > tbody > tr:nth-child(" + strconv.Itoa(i) + ")> td:nth-child(2)"
 				selectordate := "body > div.lotter-history-content > div > table > tbody > tr:nth-child(" + strconv.Itoa(i) + ")> td:nth-child(3)"
-				rowset := models.TicketNumber{}
+				rowset := model.TicketNumber{}
 				// 使用 Each 方法處理每個匹配到的元素
 				rowset.LotteryTypeID = result.ID
 
@@ -158,25 +250,23 @@ func main() {
 				title := doc.Find("body > div.history-navigater > a.fenlei").Each(func(j int, s *goquery.Selection) {
 					log.Print(s.Text())
 				})
-				var result models.LotteryType
-				condition := models.LotteryType{
+				var result model.LotteryType
+				condition := model.LotteryType{
 					Name: lottername,
 				}
 				if err := db.Where(condition).First(&result).Error; err != nil {
 					log.Fatal(err)
 				}
 
-				// 找到資料後，進行值的更新
+				// 找到資料後，更新
 				result.Name = lottername
 				result.Namech = title.Text()
-				// 更新資料到數據庫
 				db.Save(&result)
 
 				var resultBuilder strings.Builder
-
 				spans.Each(func(j int, s *goquery.Selection) {
-					// 處理每個 span
-					fmt.Printf("Row %d, Span %d: %s\n", i, j+1, s.Text())
+					// 處理每個 span row
+					// fmt.Printf("Row %d, Span %d: %s\n", i, j+1, s.Text())
 					if j > 0 {
 						resultBuilder.WriteString(",")
 					}
@@ -204,10 +294,7 @@ func main() {
 			break
 		}
 	}
-
-	time.Sleep(55 * time.Second)
 }
-
 func FindEleByHTML(htmlString string, title string, name string, contains string) []string {
 	var lotternames []string
 
