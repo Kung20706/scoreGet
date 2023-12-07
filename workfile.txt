@@ -1,0 +1,170 @@
+https://www.lotterydata.net/
+#   name     frequency
+1	CQSSC	 higher     欢乐生肖    https://www.cqccp.net/
+2	XJSSC	 higher     新疆时时彩  https://998.fun/html/shishicai_xj/ssc_index.html
+3	SHSSL	 higher     上海时时乐  https://998.fun/html/shishicai_xj/ssc_index.html ,http://www.swllc.net.cn/ 
+4	TJSSC	 higher     天津时时彩  https://998.fun/html/shishicai_xj/ssc_index.html ,https://www.tjflccpw.com/
+5	BJKL8	 higher     北京快乐8   https://kl8.17500.cn/kl8tgj/p/kjfb.html?t=1701853153347 https://datachart.500.com/kl8/
+6	BJPK10	 higher     北京PK10    https://www.bbwlc.net/
+7	JSKS	 higher     江苏快三
+8	JLK3	 higher     吉林快3     #http://www.jlfc.com.cn/View/KS_WinInfo.aspx
+9	AHK3	 higher     安徽快3   
+10	HLK3	 higher     河南快3
+11	HBK3	 higher     湖北快3
+12	SH11X5	 higher     上海11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+13	JS11X5	 higher     江苏11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+14	SD11X5	 higher     山东11选5    https://www.kaijiang588.com/zst/11x5.php?typeid=557
+15	GX11X5	 higher     广西11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+16	AF11X5	 higher     安徽11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+17	GD11X5	 higher     广东11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+18	JX11X5	 higher     江西11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+19	HB11X5	 higher     湖北11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+20	LL11X5	 higher     辽宁11选5    https://998.fun/html/shishicai_xj/ssc_index.html
+21	YN11X5	 higher     云南11选5    http://kaijiang588.com/index/lottery.html
+22	HLJ11X5	 higher     黑龙江11选5
+23	HNKL10	 higher     湖南快乐十分  https://hunanfcw.com/web/lotteryInfo/kl10fHistory
+24	TJKL10	 higher     天津快乐十分  http://www.tjflccpw.com
+25	GXKL10	 higher     广西快乐十分  https://www.gxcaiipiao.com.cn/
+26	GDKL10	 higher     广东快乐十分  http://mzj.gzgoov.cn/
+27	SCKL12	 higher     四川快乐12     https://m.chart.ydniu.com/trend/kl12sc/ds.html
+28	CQXYNC	 higher     重庆幸运农场  
+29	XYFT	 higher     皇家幸运飞艇
+30	GXKS	 higher     广西快3
+31	CQ5FC	 higher     重庆五分彩 https://www.cqssc.xyz/ssc_kjhistory.html
+32	CQFFC	 higher     重庆分分彩 need proxy
+33	JDCQSSC	 higher     经典重庆时时彩 https://www.lotterydata.net/history/jdssc_75
+34	XIYFT	 higher     幸运飞艇   https://szbxnet.com/ https://mairship.com/  https://www.168xykai.com/view/xingyft/pk10kai.html
+35	XGLHC	 lower      香港六合彩 https://www.cpzhan.com/liu-he-cai/live/
+36	FC3D	 lower      福彩3D     https://www.zhcw.com/3d/ https://kaijiang.yingti666.com/
+37	TCPL3	 lower      体彩排列3 https://www.lottery.gov.cn/ https://kaijiang.yingti666.com/
+38	TCPL5	 lower      体彩排列5 https://www.lottery.gov.cn/ https://kaijiang.yingti666.com/
+39	MOLHC	        澳门六合彩 
+40	MCPK10	        极速赛车 https://www.168xykai.com/view/jisusaiche/pk10kai.html
+41	XGPK10	        香港PK10
+42	CQSSC30S	    多彩重庆30秒
+43	TXFFC30S	    多彩腾讯30秒
+44	QQ30S	        QQ30秒
+45	AZXY8	        澳洲幸运8 https://www.168xykai.com/view/aozxy8/klsf_index.html
+46	AZXY20	        澳洲幸运20 https://www.168xykai.com/view/aozxy8/klsf_index.html
+47	AZXY5	        澳洲幸运5 https://www.168xykai.com/view/aozxy8/klsf_index.html
+48	AZXY10	        澳洲幸运10 https://www.168xykai.com/view/aozxy8/klsf_index.html
+49	TGFC	        泰国政府彩票
+50	GSB5Y	        泰国GSB彩票5年
+51	BAAC	        泰国BAAC储蓄彩票 
+52	TG11X5	        泰国11选5 https://draw.thailand-lotto.com/
+53	TG11X5FFC	    泰国分分11选5 https://draw.thailand-lotto.com/
+54	HNC	            越南传统彩-河内
+55	BNC	            越南传统彩-北宁
+56	HFC	            越南传统彩-海防
+57	NDC	            越南传统彩-南定
+58	GNIC	        越南传统彩-广宁
+59	TPC     	    越南传统彩-太平
+60	PDC     	    越南传统彩-平定
+61	XXC     	    越南传统彩-岘港
+62	DOLC	        越南传统彩-多乐
+63	DNC	            越南传统彩-达农
+64	JLC	            越南传统彩-嘉莱
+65	QHC	            越南传统彩-庆和
+66	KGC	            越南传统彩-昆嵩
+67	LSC	            越南传统彩-宁顺
+68	GPC	            越南传统彩-广平
+69	GNC	            越南传统彩-广南
+70	GYC	            越南传统彩-广义
+71	GZC	            越南传统彩-广治
+72	FAC	            越南传统彩-富安
+73	SFC	            越南传统彩-承天顺化
+74	FZMSC	        越南传统彩-胡志明市
+75	AJC	            越南传统彩-安江
+76	BLC	            越南传统彩-薄辽
+77	BZC	            越南传统彩-槟椥
+78	PYC	            越南传统彩-平阳
+79	PFC	            越南传统彩-平福
+80	PSC	            越南传统彩-平顺
+81	JOC	            越南传统彩-金瓯
+82	JYC	            越南传统彩-芹苴
+83	DLC	            越南传统彩-大叻
+84	TNC	            越南传统彩-同奈
+85	TTC	            越南传统彩-同塔
+86	HJC	            越南传统彩-后江
+87	JJC	            越南传统彩-建江
+88	LAC	            越南传统彩-隆安
+89	SZC	            越南传统彩-溯庄
+90	XLC	            越南传统彩-西宁
+91	QJC	            越南传统彩-前江
+92	CRC	            越南传统彩-茶荣
+93	YLC	            越南传统彩-永隆
+94	TDC	            越南传统彩-头顿
+95	HN300	        河内五分彩
+96	HN60	        河内分分彩
+97	RD120	        瑞典2分彩
+98	RD60	        瑞典1分彩
+99	TG300	        泰国300秒
+100	TG60	        泰国60秒
+101	YN60	        印尼分分彩
+102	YN300	        印尼五分彩
+103	XG60	        西贡分分彩
+104	XG300	        西贡五分彩
+105	RB60	        日本分分彩
+106	TLZC	        泰国老挝彩票
+107	TYKC	        泰国Yee Kee VIP
+108	VNFFC	        越南极速1分彩
+109	VNWFC	        越南极速5分彩
+110	JND30S	        加拿大30秒
+111	MNG52	        摩纳哥Super 52
+112	JND11X5	        加拿大11选5
+113	JND3D	        加拿大3D
+114	JSSM	        急速赛马
+115	YNPK10FFC	    印尼分分PK10
+116	YNPK10WFC	    印尼五分PK10
+117	GSHKA	        香港股市彩票-早市
+118	GSHKP	        香港股市彩票-午市
+119	GSTW	        台湾股市彩票
+120	GSJPA	        日本股市彩票-早市
+121	GSJPP	        日本股市彩票-午市
+122	GSKR	        韩国股市彩票
+123	GSCNA	        中国股市彩票-早市
+124	GSCNP	        中国股市彩票-午市
+125	GSSG	        新加坡股市彩票
+126	GSTH	        泰国股市彩票
+127	GSIN	        印度股市彩票
+128	GSEG	        埃及股市彩票
+129	GSRU	        俄罗斯股市彩票
+130	GSDE	        德国股市彩票
+131	GSUK	        英国股市彩票
+132	GSUS	        美国股市彩票
+133	MAX3D	        MAX3D
+134	YNHN	        越南河内套彩
+135	YNMA	        马来西亚套彩
+136	MEGA645FFC	    MEGA6/45分分彩
+137	MEGA6455FC	    MEGA6/45五分彩
+138	HNVIP	        河内VIP彩票
+139	TXFFC	        腾讯分分彩
+140	QQFFC	        QQ分分彩
+141	TX2FCS	        腾讯2分彩-双
+142	TX2FCD	        腾讯2分彩-单
+143	TX5FC	        腾讯5分彩
+144	TXPK10	        腾讯PK10
+145	QIQFFC	        奇趣分分彩
+146	BTCFFC	        比特币分分彩
+147	ZFBFFC	        支付宝分分彩
+148	ZFB5FC	        支付宝5分彩
+149	BTC5FC	        比特币五分彩
+150	BABTCFFC	    币安比特币分分彩
+151	BABTC5FC	    币安比特币五分彩
+152	BAETFFC	        币安以太币分分彩
+153	BAET5FC	        币安以太币五分彩
+154	OEBTCFFC	    欧易比特币分分彩
+155	OEBTC5FC	    欧易比特币五分彩
+156	OEETFFC 	    欧易以太币分分彩
+157	OEET5FC 	    欧易以太币五分彩
+158	HASHFFC 	    哈希分分彩
+159	HASH3FC 	    哈希三分彩
+160	HASH5FC 	    哈希五分彩
+
+202312060673
+確認狀態獎源蒐集
+https://www.kaijiang588.com/zst/11x5.php?typeid=5
+28	CQXYNC	 higher     重庆幸运农场  
+31	CQ5FC	 higher     重庆五分彩 https://www.cqssc.xyz/ssc_kjhistory.html
+32	CQFFC	 higher     重庆分分彩 need proxy
+33	JDCQSSC	 higher     经典重庆时时彩 https://www.lotterydata.net/history/jdssc_75

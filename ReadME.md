@@ -61,7 +61,7 @@ CREATE TABLE `ticket_numbers` (
   `checkstate` bit(1) DEFAULT NULL,
   `winning_number` varchar(255) DEFAULT NULL,
   `additional_number` varchar(255) DEFAULT NULL,
-  `lottery day` varchar(55) DEFAULT NULL,
+  `lottery_day` varchar(55) DEFAULT NULL,
   `start_time` varchar(55) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
