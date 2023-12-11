@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"regexp"
 	"strconv"
 	"strings"
 	model "test/model"
+	pages "test/pages"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -54,6 +54,7 @@ func main() {
 		panic(err)
 	}
 	defer service.Stop()
+
 	caps := selenium.Capabilities{"browserName": "chrome",
 		"chromeOptions": map[string]interface{}{
 			"args": []string{},
@@ -72,97 +73,11 @@ func main() {
 	}
 	defer wd.Quit()
 	log.Print("資訊源:https://www.lkag3.com/Issue/history?lottername=CQSSC")
-	FindScore(wd, db)
+	// FindScore(wd, db)
 
-	log.Print("二次確認:https://www.cqccp.net/")
-	CheckScore(wd, db)
-}
-func CheckScore(wd selenium.WebDriver, db *gorm.DB) {
-	// 取得 第一個分頁的遊戲表(包括跨境遊戲)
-	if err := wd.Get("https://www.cqccp.net/"); err != nil {
-		return
-	}
-
-	time.Sleep(3 * time.Second)
-	Source, err := wd.PageSource()
-	if err != nil {
-		log.Fatalf("Failed to get page source: %v", err)
-	}
-	elementTag := "div.contain.center > div.floor2 > div.left-award.lf > div.double>div>div.num"
-
-	//取doc內的彩種
-
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(Source))
-	if err != nil {
-		log.Fatal(err)
-	}
-	td := doc.Find(elementTag)
-
-	STlist := model.TicketNumber{}
-	td.Each(func(i int, td *goquery.Selection) {
-		// 获取每个 <div> 元素的 id 属性值
-		ScoreType, exists := td.Attr("id")
-		if exists {
-			fmt.Printf("ID 属性的值 %d: %s\n", i+1, ScoreType)
-		} else {
-			fmt.Printf("第 %d 个 <div> 元素没有 id 属性\n", i+1)
-		}
-		Score := td.Find("ul> li")
-		LotteryFlag := td.Find("p")
-		pattern := `第(.*?)期`
-		re := regexp.MustCompile(pattern)
-		matches := re.FindStringSubmatch(LotteryFlag.Text())
-
-		if len(matches) > 1 {
-			result := matches[1]
-			fmt.Printf("提取的结果: %s\n", result)
-			STlist.LotteryDay = result
-		}
-		var resultBuilder strings.Builder
-		Score.Each(func(j int, li *goquery.Selection) {
-			// fmt.Printf("Score %d: %s\n", j+1, li.Text())
-			if j > 0 {
-				resultBuilder.WriteString(",")
-			}
-			resultBuilder.WriteString(li.Text())
-		})
-		// 查询符合条件的记录
-		condition := model.TicketNumber{
-			LotteryDay:    STlist.LotteryDay,
-			WinningNumber: resultBuilder.String(),
-		}
-		// log.Print(condition)
-		var result model.TicketNumber
-		db.Where(condition).First(&result)
-		if db.Error != nil {
-			fmt.Println("Failed to query records:", db.Error)
-			return
-		}
-		// 如果找到符合条件的记录，更新记录
-		if result.ID != 0 {
-			// 更新你需要修改的字段
-			updateFields := map[string]interface{}{
-				"winning_number": resultBuilder.String(),
-				"lottery_day":    STlist.LotteryDay,
-				"check_state":    1,
-			}
-
-			// 使用 Update 方法更新记录
-			db.Model(&model.TicketNumber{}).Where(condition).Updates(updateFields)
-			if db.Error != nil {
-				fmt.Println("Failed to update records:", db.Error)
-				return
-			}
-
-			fmt.Println("Records updated successfully.")
-		} else {
-			fmt.Println("No records found.")
-		}
-
-		// 输出查询结果
-		fmt.Printf("Query Result: %+v\n", result)
-	})
-
+	// log.Print("二次確認:https://www.cqccp.net/")
+	pages.CheckScore(wd, db)
+	pages.CheckScoreSec(wd, db)
 }
 
 func FindScore(wd selenium.WebDriver, db *gorm.DB) {
@@ -182,7 +97,7 @@ func FindScore(wd selenium.WebDriver, db *gorm.DB) {
 	contains := "lottername="
 	//取彩種
 	lotternames := FindEleByHTML(Source, elementtitle, elementTag, contains)
-	for i, lottername := range lotternames[30:35] {
+	for i, lottername := range lotternames[15:35] {
 		condition := model.LotteryType{
 			Name: lottername,
 		}
@@ -198,6 +113,7 @@ func FindScore(wd selenium.WebDriver, db *gorm.DB) {
 
 			pageSource, err := wd.PageSource()
 			if err != nil {
+
 				log.Fatalf("Failed to get page source: %v", err)
 			}
 
@@ -227,7 +143,7 @@ func FindScore(wd selenium.WebDriver, db *gorm.DB) {
 				continue // 重新調用迴圈:用來支援請求時尚未渲染網頁 取得不了資訊的問題
 			}
 			// 從 <td> 內的 <span> 元素中提取內容
-			time.Sleep(3 * time.Second)
+			time.Sleep(5 * time.Second)
 			// 遍歷 1 到 10 的行數
 			for i := 10; i >= 1; i-- {
 				// 使用 strconv.Itoa 將數字轉換為字符串

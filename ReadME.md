@@ -54,17 +54,79 @@ CREATE TABLE `lottery_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-DROP TABLE IF EXISTS `ticket_numbers`;
-CREATE TABLE `ticket_numbers` (
+DROP TABLE IF EXISTS `Ticket_Numbers`;
+CREATE TABLE `Ticket_Numbers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lottery_type_id` int(11) NOT NULL,
-  `checkstate` bit(1) DEFAULT NULL,
+  `check_state` int(1) DEFAULT NULL,
   `winning_number` varchar(255) DEFAULT NULL,
   `additional_number` varchar(255) DEFAULT NULL,
   `lottery_day` varchar(55) DEFAULT NULL,
   `start_time` varchar(55) DEFAULT NULL,
+  `lottery day` varchar(55) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- 2023-12-05 11:00:18
+-- 2023-12-11 10:49:42
+
+體育
+* 足球 Football 
+* 藍球 Basketball
+* 網球 Tennis
+* 桌球  Table Tennis
+* 曲棍球 Hockey
+* 電競 Esports  
+* 手球 Handball
+* 排球 Volleyball
+* 棒球 Baseball
+* 橄欖球 American Football
+* 綜合格鬥 MMA
+* 賽車運動 Motorsport
+* 撞球 snooker
+* 室內足球 Futsal
+* 迷你足球 Minifootball
+* 羽毛球 Badminton
+* 澳式足球 Aussie Rules
+* 沙灘排球 Beach Volleyball
+* 水球 Waterpolo
+* 自行車 Cycling
+* 軟式曲棍球 Floorball
+* 俄式冰球 Bandy
+高頻彩種
+  時時彩
+  分分彩
+低頻彩種
+  六合彩 
+
+六和/台灣彩卷
+  台灣四星彩
+  台灣三星彩
+  台灣威力彩
+  台灣大樂透
+  金彩539
+  香港六合彩
+美國天天樂
+  加州天天樂
+  密西根天天樂
+  俄克拉河馬天天樂
+  佛羅里達天天樂
+菲律賓樂透
+  菲律賓樂透49
+  菲律賓樂透45
+  菲律賓樂透55
+  菲律賓樂透42
+分分彩
+  台灣快開
+基諾彩
+  台灣賓果
+PC蛋蛋
+  台灣28
+越南大樂透
+  河內(北部)
+  富安(中部)
+  順化(中部)
+  同塔(南部)
+  金甌(南部)
+  胡志明(南部)
+ 

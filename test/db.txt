@@ -31,3 +31,38 @@ CREATE TABLE `Ticket_Numbers` (
 
 
 -- 2023-12-07 10:53:10
+
+
+
+> 你今天計劃做些什麼？
+· 新資源站尋找 (29->40)
+. 對比遊戲紀錄正確性 (4->40)
+> 今日有沒有工作是需要等待其他人的協作才能進行
+· 沒有
+id	lottery_type_id	check_state	winning_number	       	lottery_day	    start_time
+8378	28	            0	    10,17,4,18,1,19,9,8		2023120812	  2023-12-08 08:00:00	
+8379	28	            0	    14,10,20,7,12,5,15,9	2023120813	  2023-12-08 08:20:00	
+8380	28	            0	    10,6,14,18,15,7,8,17	2023120814	  2023-12-08 08:40:00	
+8381	28	            0	    15,11,13,3,4,8,10,1		2023120815	  2023-12-08 09:00:00	
+8382	28	            0	    6,1,19,8,16,14,9,18		2023120816	  2023-12-08 09:20:00	
+8383	28	            0	    16,1,5,20,17,13,10,9	2023120817	  2023-12-08 09:40:00	
+8384	28	            0	    19,16,18,8,20,2,14,6	2023120818	  2023-12-08 10:00:00	
+8385	28	            1	    6,9,1,11,8,2,12,17		2023120819	  2023-12-08 10:20:00	
+直播 reddit 插劍
+https://github.com/DavidNester/SportStreamer
+m3u8 獲取方式
+https://blog.51cto.com/u_16099230/6496795
+歷史紀錄要保留到哪時候
+
+
+git config --global alias.rh  "reset --hard"
+git config --global alias.s   "status"
+git config --global alias.l   "log"
+git config --global alias.ca  "commit --amend"
+git config --global alias.cane "commit --amend --no-edit"
+git config --global alias.cc "commit"
+git config --global alias.sa "stash apply"
+git config --global alias.rh "reset --hard"
+git config --global alias.rh "reset --hard"
+git config --global alias.rh "reset --hard"
+git config --global alias.rh "reset --hard"
