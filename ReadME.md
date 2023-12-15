@@ -130,3 +130,41 @@ PC蛋蛋
   金甌(南部)
   胡志明(南部)
  
+
+ -- Adminer 4.8.1 MySQL 5.7.44 dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+SET NAMES utf8mb4;
+
+DROP TABLE IF EXISTS `lottery_types`;
+CREATE TABLE `lottery_types` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` longtext NOT NULL,
+  `namech` longtext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `Ticket_Numbers`;
+CREATE TABLE `Ticket_Numbers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lottery_type_id` int(11) NOT NULL,
+  `check_state` int(1) DEFAULT NULL,
+  `winning_number` varchar(255) DEFAULT NULL,
+  `special_number` varchar(55) DEFAULT NULL,
+  `additional_number` varchar(255) DEFAULT NULL,
+  `lottery_day` varchar(55) DEFAULT NULL,
+  `start_time` varchar(55) DEFAULT NULL,
+  `original _number` varchar(55) DEFAULT NULL,
+  `original_number` varchar(55) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- 2023-12-15 05:22:48
+
+ 

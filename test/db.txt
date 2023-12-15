@@ -66,3 +66,9 @@ git config --global alias.rh "reset --hard"
 git config --global alias.rh "reset --hard"
 git config --global alias.rh "reset --hard"
 git config --global alias.rh "reset --hard"
+
+假設talotter 為1 
+    ssc      為2 
+
+    
+

@@ -72,7 +72,7 @@ func CheckScoreSec(wd selenium.WebDriver, db *gorm.DB) {
 			fmt.Println("Failed to query records:", db.Error)
 			return
 		}
-		// 如果找到符合条件的记录，更新记录
+		// 更新记录
 		if result.ID != 0 {
 			// 更新你需要修改的字段
 			updateFields := map[string]interface{}{

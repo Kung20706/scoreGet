@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 	model "test/model"
-	pages "test/pages"
+	"test/pages"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -74,12 +74,31 @@ func main() {
 	defer wd.Quit()
 	log.Print("資訊源:https://www.lkag3.com/Issue/history?lottername=CQSSC")
 	// FindScore(wd, db)
+	// 間隔 5 秒
+	pages.Lotto4D("", "", db)
+	// interval := 5 * time.Second
 
-	// log.Print("二次確認:https://www.cqccp.net/")
-	pages.CheckScore(wd, db)
-	pages.CheckScoreSec(wd, db)
+	// // 使用 time.Tick 創建定時器
+	// ticker := time.Tick(interval)
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case <-ticker:
+	// 			pages.Superlotto638("", "", db)
+	// 		}
+	// 	}
+	// }()
+	time.Sleep(2 * time.Second)
 }
 
+type LotteryResult struct {
+	Period      string `json:"期別"`
+	SpecialNum  string `json:"特別號"`
+	WinningNums []int  `json:"獎號"`
+	DrawDate    string `json:"開獎日期"`
+}
+
+// 使用模擬方式去拿資料 lkag
 func FindScore(wd selenium.WebDriver, db *gorm.DB) {
 
 	// 取得 第一個分頁的遊戲表(包括跨境遊戲)
