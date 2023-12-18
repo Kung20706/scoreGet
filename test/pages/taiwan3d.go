@@ -65,29 +65,32 @@ func Lotto3D(backYear, backMonth string, db *gorm.DB) {
 	firstNums := doc.Find(".td_w.font_black14b_center")
 	dataCount := firstNums.Length() / COUNT_OF_3D_LOTTERY_PRIZE_NUMBER
 
-	for i := dataCount - 1; i >= 0; i-- {
+	for i := 0; i < dataCount; i++ {
 		tempSecondNums := make([]string, COUNT_OF_3D_LOTTERY_PRIZE_NUMBER)
 		for j := 0; j < COUNT_OF_3D_LOTTERY_PRIZE_NUMBER; j++ {
 			tempSecondNums[j] = firstNums.Eq((i * COUNT_OF_3D_LOTTERY_PRIZE_NUMBER) + j).Text()
 		}
+
 		rowset := model.TicketNumber{}
 		var dates []string
+		var yyydds []string
 		selector := fmt.Sprintf(" tbody > tr:nth-child(3) > td:nth-child(1)  ")
 		doc.Find(selector).Each(func(i int, s *goquery.Selection) {
 			date := s.Text()
 
-			dates = append([]string{date}, dates...)
+			dates = append(dates, date)
 		})
-
+		// 期號:
 		rowset.LotteryDay = dates[i]
-
+		// 日期:
 		doc.Find("table > tbody > tr > td > table > tbody > tr:nth-child(3) > td:nth-child(2) > p").Each(func(i int, s *goquery.Selection) {
 			// 在这里处理每个符合条件的元素 s
-			date := s.Text()
+			yyydd := s.Text()
 			// 打印或处理 title
-			log.Print(date)
-			rowset.StartTime = date
+			yyydds = append(yyydds, yyydd[6:])
+
 		})
+		rowset.StartTime = yyydds[i]
 		rowset.WinningNumber = strings.Join(tempSecondNums, ",")
 		rowset.LotteryTypeID = rspBody.ID
 		log.Print(rowset)

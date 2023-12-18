@@ -1,2 +1,7 @@
 ## log
 tawian/
+## valoum
+.mysql-data/
+## go env
+go.mod
+go.sum

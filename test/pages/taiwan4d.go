@@ -61,50 +61,58 @@ func Lotto4D(backYear, backMonth string, db *gorm.DB) {
 		log.Fatal(err)
 
 	}
+
 	COUNT_OF_4D_LOTTERY_PRIZE_NUMBER := 4
 
-	firstNums := doc.Find(".td_w.font_black14b_center")
+	firstNums := doc.Find(".td_w.font_black14b_center>span.td_w")
+	length := firstNums.Length() / COUNT_OF_4D_LOTTERY_PRIZE_NUMBER
+	var dates []string
+	selector := fmt.Sprintf(" tbody > tr:nth-child(3) > td:nth-child(1)  ")
 
-	// dataCount := firstNums.Length() / COUNT_OF_4D_LOTTERY_PRIZE_NUMBER
-	// log.Print(dataCount)
-	for i := firstNums.Length() - 1; i >= 0; i-- {
+	doc.Find(selector).Each(func(i int, s *goquery.Selection) {
+		date := s.Text()
+		dates = append(dates, date)
+	})
+	// Ensure that index i is within the bounds of the dates slice
+	rowsetlist := []model.TicketNumber{}
+	rowset := model.TicketNumber{}
+	var result model.TicketNumber
+	for i := 0; i < length; i++ {
 		tempSecondNums := make([]string, COUNT_OF_4D_LOTTERY_PRIZE_NUMBER)
 		for j := 0; j < COUNT_OF_4D_LOTTERY_PRIZE_NUMBER; j++ {
 			tempSecondNums[j] = firstNums.Eq((i * COUNT_OF_4D_LOTTERY_PRIZE_NUMBER) + j).Text()
 		}
-		log.Print(tempSecondNums)
-		rowset := model.TicketNumber{}
-		var dates []string
-		selector := fmt.Sprintf(" tbody > tr:nth-child(3) > td:nth-child(1)  ")
-		doc.Find(selector).Each(func(i int, s *goquery.Selection) {
-			date := s.Text()
-
-			dates = append([]string{date}, dates...)
-		})
-
-		rowset.LotteryDay = dates[i]
-
-		doc.Find("table > tbody > tr > td > table > tbody > tr:nth-child(3) > td:nth-child(2) > p").Each(func(i int, s *goquery.Selection) {
-			// 在这里处理每个符合条件的元素 s
-			date := s.Text()
-			// 打印或处理 title
-			log.Print(date)
-			rowset.StartTime = date
-		})
 		rowset.WinningNumber = strings.Join(tempSecondNums, ",")
+		log.Print(strings.Join(tempSecondNums, ","))
 		rowset.LotteryTypeID = rspBody.ID
-		log.Print(rowset)
-		// newTicket := model.TicketNumber{
-		// 	WinningNumber:   numbersString,
-		// 	LotteryDay:      date,
-		// 	Special_Number:  doc.Find(selector).Text(),
-		// 	Original_Number: tempSecondNums,
-		// 	LotteryTypeID:   rspBody.ID,
+		if i < len(dates) {
+			rowset.LotteryDay = dates[i]
+		}
+		rowsetlist = append(rowsetlist, rowset)
+		db.Where(rowset).First(&result)
+		// if db.Error != nil {
+		// 	fmt.Println("Failed to query records:", db.Error)
+		// 	return
 		// }
-		// log.Print(data, title)
+		// 更新记录
+
+		if result.ID != 0 {
+			// 更新你需要修改的字段
+
+			// 使用 Update 方法更新记录
+			db.Model(&model.TicketNumber{}).Where(rowset).Updates(rowset)
+			if db.Error != nil {
+				fmt.Println("Failed to update records:", db.Error)
+				return
+			}
+
+			fmt.Println("Records updated successfully.")
+		} else {
+			db.Save(&rowsetlist)
+			fmt.Println("No records found.")
+		}
 	}
 
 	time.Sleep(300 * time.Millisecond)
-
 	return
 }
