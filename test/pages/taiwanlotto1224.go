@@ -64,7 +64,7 @@ func Lotto1224(backYear, backMonth string, db *gorm.DB) {
 
 	COUNT_OF_1224_LOTTERY_PRIZE_NUMBER := 12
 	firstNums := doc.Find(".td_w.font_black14b_center>span>span")
-	log.Print(firstNums.Length())
+	var result model.TicketNumber
 	dataCount := firstNums.Length() / 2 / COUNT_OF_1224_LOTTERY_PRIZE_NUMBER
 	// 一局由總球數12除以24  因為有順序和大小
 	for i := 0; i < dataCount; i++ {
@@ -78,22 +78,44 @@ func Lotto1224(backYear, backMonth string, db *gorm.DB) {
 			original_Nums[j] = strings.ReplaceAll(firstNums.Eq((i*COUNT_OF_1224_LOTTERY_PRIZE_NUMBER*2)+j+12).Text(), " ", "")
 
 		}
-
-		// log.Print(tempSecondNums)
-		rowset := model.TicketNumber{}
 		// var dates []string
 		selector := fmt.Sprintf("#Lotto1224Control_history_dlQuery_Lotto1224_DrawTerm_%d", i)
-		rowset.LotteryDay = doc.Find(selector).Text()
 
 		// log.Print(dates)
-		// rowset.LotteryDay = dates[i]
+		// newTicket.LotteryDay = dates[i]
 
 		dateselector := fmt.Sprintf("#Lotto1224Control_history_dlQuery_Lotto1224_DDate_%d", i)
-		rowset.StartTime = doc.Find(dateselector).Text()
-		rowset.WinningNumber = strings.Join(tempSecondNums, ",")
-		rowset.Original_Number = strings.Join(original_Nums, ",")
-		rowset.LotteryTypeID = rspBody.ID
-		log.Print(rowset)
+
+		newTicket := model.TicketNumber{
+			LotteryDay:      doc.Find(selector).Text(),
+			StartTime:       doc.Find(dateselector).Text(),
+			WinningNumber:   strings.Join(tempSecondNums, ","),
+			Original_Number: strings.Join(original_Nums, ","),
+			LotteryTypeID:   rspBody.ID,
+		}
+		db.Where(newTicket).First(&result)
+		if db.Error != nil {
+			fmt.Println("Failed to query records:", db.Error)
+			return
+		}
+
+		// 更新记录
+		if result.ID != 0 {
+			// 更新你需要修改的字段
+			log.Print(newTicket)
+			newTicket.CheckState = 1
+			// 使用 Update 方法更新记录
+			db.Model(&model.TicketNumber{}).Where(newTicket).Updates(newTicket)
+			if db.Error != nil {
+				fmt.Println("Failed to update records:", db.Error)
+				return
+			}
+
+			fmt.Println("Records updated successfully.")
+		} else {
+			db.Save(&newTicket)
+			fmt.Println("No records found.")
+		}
 
 	}
 

@@ -64,28 +64,49 @@ func DaliyCash(backYear, backMonth string, db *gorm.DB) {
 	COUNT_OF_539_LOTTERY_PRIZE_NUMBER := 10
 	firstNums := doc.Find(".td_w.font_black14b_center")
 	dataCount := firstNums.Length() / 5 / 2
-
+	var result model.TicketNumber
 	for i := 0; i < dataCount; i++ {
 		tempSecondNums := make([]string, dataCount)
 		for j := 0; j < COUNT_OF_539_LOTTERY_PRIZE_NUMBER; j++ {
 			tempSecondNums[j] = firstNums.Eq((i * COUNT_OF_539_LOTTERY_PRIZE_NUMBER) + j).Text()
 		}
 		log.Print(tempSecondNums)
-		rowset := model.TicketNumber{}
 		// var dates []string
 		selector := fmt.Sprintf("#D539Control_history1_dlQuery_D539_DrawTerm_%d", i)
-		rowset.LotteryDay = doc.Find(selector).Text()
 
 		// log.Print(dates)
-		// rowset.LotteryDay = dates[i]
+		// newTicket.LotteryDay = dates[i]
 
 		dateselector := fmt.Sprintf("#D539Control_history1_dlQuery_D539_DDate_%d", i)
-		rowset.StartTime = doc.Find(dateselector).Text()
-		rowset.WinningNumber = strings.Join(tempSecondNums, ",")[:15]
 
-		rowset.Original_Number = strings.Join(tempSecondNums, ",")[15:]
-		rowset.LotteryTypeID = rspBody.ID
-		log.Print(rowset)
+		newTicket := model.TicketNumber{
+			StartTime:       doc.Find(dateselector).Text(),
+			WinningNumber:   strings.Join(tempSecondNums, ",")[:14],
+			LotteryDay:      doc.Find(selector).Text(),
+			Original_Number: strings.Join(tempSecondNums, ",")[15:],
+			LotteryTypeID:   rspBody.ID,
+		}
+		db.Where(newTicket).First(&result)
+		if db.Error != nil {
+			fmt.Println("Failed to query records:", db.Error)
+			return
+		}
+		if result.ID != 0 {
+			// 更新你需要修改的字段
+			log.Print(newTicket)
+			newTicket.CheckState = 1
+			// 使用 Update 方法更新记录
+			db.Model(&model.TicketNumber{}).Where(newTicket).Updates(newTicket)
+			if db.Error != nil {
+				fmt.Println("Failed to update records:", db.Error)
+				return
+			}
+
+			fmt.Println("Records updated successfully.")
+		} else {
+			db.Save(&newTicket)
+			fmt.Println("No records found.")
+		}
 
 	}
 

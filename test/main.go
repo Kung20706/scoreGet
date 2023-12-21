@@ -72,10 +72,10 @@ func main() {
 		panic(err)
 	}
 	defer wd.Quit()
-	log.Print("資訊源:https://www.lkag3.com/Issue/history?lottername=CQSSC")
+	// log.Print("資訊源:https://www.lkag3.com/Issue/history?lottername=CQSSC")
 	// FindScore(wd, db)
 	// 間隔 5 秒
-	pages.Lotto4D("", "", db)
+	pages.FlaCashoflotteryusa(wd, db)
 	// interval := 5 * time.Second
 
 	// // 使用 time.Tick 創建定時器
@@ -88,7 +88,7 @@ func main() {
 	// 		}
 	// 	}
 	// }()
-	time.Sleep(2 * time.Second)
+	// time.Sleep(2 * time.Second)
 }
 
 type LotteryResult struct {

@@ -69,6 +69,12 @@ git config --global alias.rh "reset --hard"
 
 假設talotter 為1 
     ssc      為2 
-
+https://vietlott.vn/
     
 
+
+
+#resultMainTable > div > div:nth-child(3) > div.resultMainCell4.tableResult2 > span:nth- child(1) > img
+#resultMainTable > div > div:nth-child(3) > div.resultMainCell4.tableResult2 > span:nth-child(1) > img
+#resultMainTable > div > div:nth-child(3) > div.resultMainCell4.tableResult2 > span:nth-child(1) > img
+#resultMainTable > div > div:nth-child(3) > div.resultMainCell4.tableResult2 > span:nth-child(1) > img

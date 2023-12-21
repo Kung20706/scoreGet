@@ -70,8 +70,7 @@ func Lotto3D(backYear, backMonth string, db *gorm.DB) {
 		for j := 0; j < COUNT_OF_3D_LOTTERY_PRIZE_NUMBER; j++ {
 			tempSecondNums[j] = firstNums.Eq((i * COUNT_OF_3D_LOTTERY_PRIZE_NUMBER) + j).Text()
 		}
-
-		rowset := model.TicketNumber{}
+		var result model.TicketNumber
 		var dates []string
 		var yyydds []string
 		selector := fmt.Sprintf(" tbody > tr:nth-child(3) > td:nth-child(1)  ")
@@ -81,7 +80,7 @@ func Lotto3D(backYear, backMonth string, db *gorm.DB) {
 			dates = append(dates, date)
 		})
 		// 期號:
-		rowset.LotteryDay = dates[i]
+
 		// 日期:
 		doc.Find("table > tbody > tr > td > table > tbody > tr:nth-child(3) > td:nth-child(2) > p").Each(func(i int, s *goquery.Selection) {
 			// 在这里处理每个符合条件的元素 s
@@ -90,18 +89,33 @@ func Lotto3D(backYear, backMonth string, db *gorm.DB) {
 			yyydds = append(yyydds, yyydd[6:])
 
 		})
-		rowset.StartTime = yyydds[i]
-		rowset.WinningNumber = strings.Join(tempSecondNums, ",")
-		rowset.LotteryTypeID = rspBody.ID
-		log.Print(rowset)
-		// newTicket := model.TicketNumber{
-		// 	WinningNumber:   numbersString,
-		// 	LotteryDay:      date,
-		// 	Special_Number:  doc.Find(selector).Text(),
-		// 	Original_Number: tempSecondNums,
-		// 	LotteryTypeID:   rspBody.ID,
-		// }
-		// log.Print(data, title)
+		newTicket := model.TicketNumber{
+			LotteryDay:    dates[i],
+			StartTime:     yyydds[i],
+			WinningNumber: strings.Join(tempSecondNums, ","),
+			LotteryTypeID: rspBody.ID,
+		}
+		db.Where(newTicket).First(&model.TicketNumber{})
+		if db.Error != nil {
+			fmt.Println("Failed to query records:", db.Error)
+			return
+		}
+		if result.ID != 0 {
+			// 更新你需要修改的字段
+			log.Print(newTicket)
+			newTicket.CheckState = 1
+			// 使用 Update 方法更新记录
+			db.Model(&model.TicketNumber{}).Where(newTicket).Updates(newTicket)
+			if db.Error != nil {
+				fmt.Println("Failed to update records:", db.Error)
+				return
+			}
+
+			fmt.Println("Records updated successfully.")
+		} else {
+			db.Save(&newTicket)
+			fmt.Println("No records found.")
+		}
 	}
 
 	time.Sleep(300 * time.Millisecond)

@@ -74,33 +74,46 @@ func Lotto4D(backYear, backMonth string, db *gorm.DB) {
 		dates = append(dates, date)
 	})
 	// Ensure that index i is within the bounds of the dates slice
-	rowsetlist := []model.TicketNumber{}
-	rowset := model.TicketNumber{}
+
+	// rowset := model.TicketNumber{}
 	var result model.TicketNumber
+	var yyydds []string
 	for i := 0; i < length; i++ {
 		tempSecondNums := make([]string, COUNT_OF_4D_LOTTERY_PRIZE_NUMBER)
 		for j := 0; j < COUNT_OF_4D_LOTTERY_PRIZE_NUMBER; j++ {
 			tempSecondNums[j] = firstNums.Eq((i * COUNT_OF_4D_LOTTERY_PRIZE_NUMBER) + j).Text()
 		}
-		rowset.WinningNumber = strings.Join(tempSecondNums, ",")
-		log.Print(strings.Join(tempSecondNums, ","))
-		rowset.LotteryTypeID = rspBody.ID
-		if i < len(dates) {
-			rowset.LotteryDay = dates[i]
+
+		newTicket := model.TicketNumber{
+			WinningNumber: strings.Join(tempSecondNums, ","),
+			LotteryTypeID: rspBody.ID,
 		}
-		rowsetlist = append(rowsetlist, rowset)
-		db.Where(rowset).First(&result)
-		// if db.Error != nil {
-		// 	fmt.Println("Failed to query records:", db.Error)
-		// 	return
-		// }
+		doc.Find("table > tbody > tr:nth-child(3) > td:nth-child(2) > p").Each(func(i int, s *goquery.Selection) {
+			// 在这里处理每个符合条件的元素 s
+			yyydd := s.Text()
+			// 打印或处理 title
+			yyydds = append(yyydds, yyydd[6:])
+
+		})
+		newTicket.StartTime = yyydds[i]
+		if i < len(dates) {
+			newTicket.LotteryDay = dates[i]
+		}
+		log.Print("newTicket", newTicket.StartTime)
+		// 如果沒有在紀錄中找到  新增一筆資訊
+		db.Where(newTicket).First(&result)
+		if db.Error != nil {
+			fmt.Println("Failed to query records:", db.Error)
+			return
+		}
 		// 更新记录
 
 		if result.ID != 0 {
 			// 更新你需要修改的字段
-
+			log.Print(newTicket)
+			newTicket.CheckState = 1
 			// 使用 Update 方法更新记录
-			db.Model(&model.TicketNumber{}).Where(rowset).Updates(rowset)
+			db.Model(&model.TicketNumber{}).Where(newTicket).Updates(newTicket)
 			if db.Error != nil {
 				fmt.Println("Failed to update records:", db.Error)
 				return
@@ -108,7 +121,7 @@ func Lotto4D(backYear, backMonth string, db *gorm.DB) {
 
 			fmt.Println("Records updated successfully.")
 		} else {
-			db.Save(&rowsetlist)
+			db.Save(&newTicket)
 			fmt.Println("No records found.")
 		}
 	}
